@@ -239,8 +239,10 @@ public class Controller {
 	
 	public void setVMRam(String uuid, Long value){
 		VM vm = getVM(uuid);
+		value *= 1024*1024;
 		try {
-			vm.setMemoryStaticMax(connection, value);
+			vm.setMemoryLimits(connection, value, value, value, value);
+			//vm.setMemoryStaticMax(connection, value);
 		} catch (XenAPIException | XmlRpcException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
