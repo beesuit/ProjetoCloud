@@ -6,5 +6,6 @@
 	<classpathentry exported="true" kind="lib" path="libs/xenserver-6.2.0-1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/xmlrpc-client-3.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/xmlrpc-common-3.1.jar"/>
+	<classpathentry kind="lib" path="libs/mail.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

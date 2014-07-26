@@ -1,153 +1,131 @@
+
 package gui;
 
 import java.awt.BorderLayout;
 import java.awt.Button;
 import java.awt.Dimension;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
-import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
+import javax.swing.SwingConstants;
 import javax.swing.Timer;
 
 import control.Controller;
 
-public class Main extends JFrame{
-	DefaultListModel<String> listModel;
-	JList<String> list;
-	final Button loadButton;
-	Button createButton;
-	int a;
+public class Main extends JFrame {
+    DefaultListModel<String> listModel;
+    JList<String> list;
+    final Button loadButton;
+    JComboBox cpuCB;
+    JComboBox ramCB;
+    Button alertStartButton;
+    Button alertStopButton;
 
-	public Main() {
-		// TODO Auto-generated constructor stub
-		a = 1;
-		listModel = new DefaultListModel<String>();
-		listModel.addElement("Jane Doe");
-		listModel.addElement("John Smith");
-		listModel.addElement("Kathy Green");
+    public Main() {
+        JPanel container = new JPanel(new BorderLayout());
+        final JPanel vmsPane = new JPanel();
+        JPanel menuPane = new JPanel();
+        final JScrollPane scrollPane = new JScrollPane(vmsPane);
 
-		list = new JList<String>(listModel);
-		
-		
-		JScrollPane listScroller = new JScrollPane(list);
-		listScroller.setPreferredSize(new Dimension(250, 80));
-		
-		loadButton = new Button();
-		loadButton.addActionListener(new ActionListener(){
+        vmsPane.setLayout(new BoxLayout(vmsPane, BoxLayout.PAGE_AXIS));
+        loadButton = new Button("Carregar");
+        loadButton.addActionListener(new ActionListener() {
 
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				// TODO Auto-generated method stub
-				
-				/*Main main = new Main();
-				main.setSize(200,200);
-				main.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-				main.setVisible(true);*/
-				
-				//add(new MyPanel());
-				
-			}
-			
-		});
-		
-		createButton = new Button();
-		
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                // Controller.get().connect();
+                Controller.get().getAllVMs();
+                vmsPane.removeAll();
+                vmsPane.add(Box.createVerticalStrut(50));
+                vmsPane.add(new HostPanel());
+                vmsPane.add(Box.createVerticalStrut(50));
+                vmsPane.add(new JSeparator(SwingConstants.HORIZONTAL));
+                vmsPane.add(Box.createVerticalStrut(50));
 
-		Timer timer = new Timer(500, new ActionListener(){
+                for (String i : Controller.get().getUuidList()) {
+                    MyPanel pane = new MyPanel(i);
+                    vmsPane.add(pane);
+                    vmsPane.add(Box.createVerticalStrut(50));
+                    vmsPane.add(new JSeparator(SwingConstants.HORIZONTAL));
+                    vmsPane.add(Box.createVerticalStrut(50));
+                }
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				//loadButton.setLabel(getText());
-				
-			}
-			
-		});
-		
-		timer.setRepeats(true);
-        timer.setCoalesce(true);
-        timer.setInitialDelay(0);
-        timer.start();
-		
-		JPanel panel = new JPanel();
-		panel.add(loadButton);
-		panel.add(listScroller);
-		this.add(panel);
+                scrollPane.validate();
+            }
 
-	}
-	
-	public Main(boolean value){
-		JPanel container = new JPanel(new BorderLayout());
-		final JPanel vmsPane = new JPanel();
-		JPanel menuPane = new JPanel();
-		final JScrollPane scrollPane = new JScrollPane(vmsPane);
-		
-		
-		vmsPane.setLayout(new GridLayout(0,1));
-		loadButton = new Button("Carregar");
-		loadButton.addActionListener(new ActionListener(){
+        });
 
-			@Override
-			public void actionPerformed(ActionEvent arg0){
-				Controller.get().connect();
-				Controller.get().getAllVMs();
-				vmsPane.removeAll();
-				for(String i : Controller.get().getUuidList()){
-					MyPanel pane = new MyPanel(i);
-					vmsPane.add(pane);
-				}
-				
-				
-				
-				//vmsPane.add(new JLabel(Controller.get().getFirst()));
-				Controller.get().getFirst();
-				scrollPane.validate();
-			}
-			
-		});
-		
-		createButton = new Button("Criar");
-		createButton.addActionListener(new ActionListener(){
+        String[] thresholds = {
+                "50%", "55%", "60%", "65%", "70%", "75%", "80%", "85%", "90%", "95%"
+        };
 
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				//TODO
-				System.out.println("Create");
-				//MyPanel testPane = new MyPanel("hey");
-				//vmsPane.add(testPane);
-				//scrollPane.validate();
-				
-			}
-			
-		});
-		
-		menuPane.add(createButton);
-		menuPane.add(loadButton);
-		container.add(menuPane, BorderLayout.PAGE_START);
-		container.add(scrollPane, BorderLayout.CENTER);
-		
-		//scrollPane.add(mainPane);
-		
-		//TODO
-		//conectar e recuperar todas as VMs do host
-		
-		this.add(container);		
-	}
+        cpuCB = new JComboBox(thresholds);
+        ramCB = new JComboBox(thresholds);
 
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		Main main = new Main(true);
-		main.setSize(800, 600);
-		main.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		main.setVisible(true);
-	}
+        JLabel cpuAlert = new JLabel("Alerta CPU: ");
+        JLabel ramAlert = new JLabel("Alerta RAM: ");
+
+        alertStartButton = new Button("Start");
+        alertStartButton.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                // TODO Auto-generated method stub
+                // inicia thread de monitoramento e envio de email
+                int cpu = 50 + cpuCB.getSelectedIndex() * 5;
+                int ram = 50 + ramCB.getSelectedIndex() * 5;
+                Controller.get().startAlertThread(cpu, ram);
+            }
+
+        });
+
+        alertStopButton = new Button("Stop");
+        alertStopButton.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                // TODO Auto-generated method stub
+                Controller.get().stopAlertThread();
+            }
+
+        });
+
+        menuPane.add(loadButton);
+        menuPane.add(cpuAlert);
+        menuPane.add(cpuCB);
+        menuPane.add(ramAlert);
+        menuPane.add(ramCB);
+        menuPane.add(alertStartButton);
+        menuPane.add(alertStopButton);
+        container.add(menuPane, BorderLayout.PAGE_START);
+        container.add(scrollPane, BorderLayout.CENTER);
+
+        // scrollPane.add(mainPane);
+
+        // TODO
+        // conectar e recuperar todas as VMs do host
+
+        this.add(container);
+    }
+
+    /**
+     * @param args
+     */
+    public static void main(String[] args) {
+        Main main = new Main();
+        main.setSize(960, 680);
+        main.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        main.setVisible(true);
+    }
 
 }
