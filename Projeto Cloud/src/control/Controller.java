@@ -6,19 +6,11 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
 import org.apache.xmlrpc.XmlRpcException;
-
 import com.xensource.xenapi.APIVersion;
 import com.xensource.xenapi.Connection;
 import com.xensource.xenapi.Session;
 import com.xensource.xenapi.Types;
-import com.xensource.xenapi.Types.BadServerResponse;
-import com.xensource.xenapi.Types.OperationNotAllowed;
-import com.xensource.xenapi.Types.OtherOperationInProgress;
-import com.xensource.xenapi.Types.SrFull;
-import com.xensource.xenapi.Types.VmBadPowerState;
-import com.xensource.xenapi.Types.VmIsTemplate;
 import com.xensource.xenapi.Types.XenAPIException;
 import com.xensource.xenapi.VM;
 import com.xensource.xenapi.VM.Record;
@@ -81,26 +73,6 @@ public class Controller {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		}
-	}
-
-	public void setMemory(Long value, String id){
-		//VM.getByUuid(connection, id);
-		try {
-			getVM(id).setMemoryStaticMax(connection, value);
-		} catch (XenAPIException | XmlRpcException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-	}
-
-	public void setVCPUs(Long value, String id){
-		try {
-			getVM(id).setVCPUsNumberLive(connection, value);
-		} catch (XenAPIException | XmlRpcException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 	}
 	
@@ -263,6 +235,26 @@ public class Controller {
 			e.printStackTrace();
 		}
 		
+	}
+	
+	public void setVMRam(String uuid, Long value){
+		VM vm = getVM(uuid);
+		try {
+			vm.setMemoryStaticMax(connection, value);
+		} catch (XenAPIException | XmlRpcException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public void setVMVCPUs(String uuid, Long value){
+		VM vm = getVM(uuid);
+		try {
+			vm.setVCPUsNumberLive(connection, value);
+		} catch (XenAPIException | XmlRpcException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }

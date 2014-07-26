@@ -119,6 +119,9 @@ public class Main extends JFrame{
 			public void actionPerformed(ActionEvent arg0) {
 				//TODO
 				System.out.println("Create");
+				//MyPanel testPane = new MyPanel("hey");
+				//vmsPane.add(testPane);
+				//scrollPane.validate();
 				
 			}
 			
