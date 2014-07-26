@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 import control.Controller;
 
@@ -19,6 +20,14 @@ public class MyPanel extends JPanel {
 	private JLabel ramLabel;
 	private JLabel uuidLabel;
 	
+	private JLabel cpuSettingsLabel;
+	private JTextField cpuValueField;
+	private JButton cpuOKButton;
+	private JLabel ramSettingsLabel;
+	private JTextField ramValueField;
+	private JButton ramOKButton;
+	
+	
 	private JButton eraseButton;
 	private JButton stopButton;
 	private JButton restartButton;
@@ -29,6 +38,7 @@ public class MyPanel extends JPanel {
 	public MyPanel(String uuid) {
 		this.uuid = uuid;
 		
+		//label pane
 		titleLabel = new JLabel();
 		titleLabel.setText("Title");
 		cpuLabel = new JLabel();
@@ -38,16 +48,20 @@ public class MyPanel extends JPanel {
 		uuidLabel = new JLabel();
 		uuidLabel.setText("UUID");
 		
+		//settings pane
+		cpuSettingsLabel = new JLabel();
+		cpuValueField = new JTextField(10);
+		cpuOKButton = new JButton();
+		ramSettingsLabel = new JLabel();
+		ramValueField = new JTextField(10);
+		ramOKButton = new JButton();
+		
+		//button pane
 		cloneButton = new JButton();
-		
 		eraseButton = new JButton();
-		
 		stopButton = new JButton();
-		
 		restartButton = new JButton();
-		
 		startButton = new JButton();
-		
 		suspendButton = new JButton();
 		
 		
@@ -56,6 +70,19 @@ public class MyPanel extends JPanel {
 		labelPane.add(cpuLabel);
 		labelPane.add(ramLabel);
 		labelPane.add(uuidLabel);
+		
+		//TODO
+		//middle pane
+		
+		JPanel settingsPane = new JPanel();
+		settingsPane.add(cpuSettingsLabel);
+		settingsPane.add(cpuValueField);
+		settingsPane.add(cpuOKButton);
+		
+		settingsPane.add(ramSettingsLabel);
+		settingsPane.add(ramValueField);
+		settingsPane.add(ramOKButton);
+		
 		
 		JPanel buttonPane = new JPanel();
 		buttonPane.add(cloneButton);
@@ -67,7 +94,9 @@ public class MyPanel extends JPanel {
 		
 		setLayout(new GridLayout(0,1));
 		add(labelPane);
+		add(settingsPane);
 		add(buttonPane);
+		
 		setUpPanel();
 	}
 	
@@ -77,6 +106,9 @@ public class MyPanel extends JPanel {
 		cpuLabel.setText("CPU");
 		ramLabel.setText(Controller.get().getVMMem(uuid));
 		uuidLabel.setText(uuid);
+		
+		cpuSettingsLabel.setText("Nº de vCPUs");
+		ramSettingsLabel.setText("Quantidade de RAM");
 		
 		cloneButton.setText("Clonar VM");
 		cloneButton.addActionListener(new ActionListener(){
@@ -144,6 +176,32 @@ public class MyPanel extends JPanel {
 			
 		});
 		
+		cpuOKButton.setText("OK");
+		cpuOKButton.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				String value = cpuValueField.getText();
+				if(value != null){
+					Controller.get().setVMVCPUs(uuid, Long.valueOf(value));
+				}
+				
+			}
+			
+		});
+		
+		ramOKButton.setText("OK");
+		ramOKButton.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String value = ramValueField.getText();
+				if(value != null){
+					Controller.get().setVMRam(uuid, Long.valueOf(value));
+				}
+			}
+			
+		});
 	}
 
 }
