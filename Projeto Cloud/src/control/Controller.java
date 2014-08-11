@@ -64,6 +64,7 @@ public class Controller {
     private void getHost() {
         Set<Host> set = new HashSet<Host>();
 
+
         try {
             set = Host.getAll(connection);
             for (Host h : set) {
@@ -456,4 +457,5 @@ public class Controller {
         }
     }
 
+		
 }
